@@ -1,9 +1,11 @@
 import React from 'react';
-import type { RoadmapData } from '../types';
+import type { RoadmapData, RoadmapItem } from '../types';
 import { TimelineHeader } from './TimelineHeader';
 import { TimelineGoal } from './TimelineGoal';
 import { TimelineRow } from './TimelineRow';
 import { getGoalColor } from '../utils/colors';
+import { ItemDetailsModal } from './ItemDetailsModal';
+import { useState } from 'react';
 
 interface TimelineProps {
   data: RoadmapData;
@@ -11,6 +13,8 @@ interface TimelineProps {
 }
 
 export const Timeline: React.FC<TimelineProps> = ({ data, year = new Date().getFullYear() }) => {
+  const [selectedItem, setSelectedItem] = useState<RoadmapItem | null>(null);
+
   return (
     <div className="flex flex-col w-full h-full bg-[#1a1a1a] text-gray-200 overflow-hidden rounded-xl border border-gray-800 shadow-2xl">
       {/* Header */}
@@ -36,6 +40,7 @@ export const Timeline: React.FC<TimelineProps> = ({ data, year = new Date().getF
                 goal={goal} 
                 year={year} 
                 colorClass={getGoalColor(index)}
+                onItemClick={setSelectedItem}
               />
             ))}
 
@@ -53,6 +58,7 @@ export const Timeline: React.FC<TimelineProps> = ({ data, year = new Date().getF
                     item={item} 
                     year={year} 
                     colorClass={getGoalColor(index + data.goals.length)} // Offset by goals length to maintain variety
+                    onClick={setSelectedItem}
                   />
                 ))}
               </>
@@ -67,6 +73,14 @@ export const Timeline: React.FC<TimelineProps> = ({ data, year = new Date().getF
           </div>
         </div>
       </div>
+
+      {/* Details Modal */}
+      {selectedItem && (
+        <ItemDetailsModal 
+          item={selectedItem} 
+          onClose={() => setSelectedItem(null)} 
+        />
+      )}
     </div>
   );
 };

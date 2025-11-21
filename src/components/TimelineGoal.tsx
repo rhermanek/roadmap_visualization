@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { RoadmapGoal } from '../types';
+import type { RoadmapGoal, RoadmapItem } from '../types';
 import { TimelineRow } from './TimelineRow';
 import { ChevronDown, ChevronRight, Folder } from 'lucide-react';
 
@@ -7,9 +7,10 @@ interface TimelineGoalProps {
   goal: RoadmapGoal;
   year: number;
   colorClass: string;
+  onItemClick: (item: RoadmapItem) => void;
 }
 
-export const TimelineGoal: React.FC<TimelineGoalProps> = ({ goal, year, colorClass }) => {
+export const TimelineGoal: React.FC<TimelineGoalProps> = ({ goal, year, colorClass, onItemClick }) => {
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
@@ -35,7 +36,13 @@ export const TimelineGoal: React.FC<TimelineGoalProps> = ({ goal, year, colorCla
       {isExpanded && (
         <div className="bg-gray-900/10">
           {goal.items.map((item) => (
-            <TimelineRow key={item.id} item={item} year={year} colorClass={colorClass} />
+            <TimelineRow 
+              key={item.id} 
+              item={item} 
+              year={year} 
+              colorClass={colorClass}
+              onClick={onItemClick}
+            />
           ))}
         </div>
       )}

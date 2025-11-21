@@ -7,9 +7,10 @@ interface TimelineRowProps {
   item: RoadmapItem;
   year: number;
   colorClass?: string;
+  onClick: (item: RoadmapItem) => void;
 }
 
-export const TimelineRow: React.FC<TimelineRowProps> = ({ item, year, colorClass }) => {
+export const TimelineRow: React.FC<TimelineRowProps> = ({ item, year, colorClass, onClick }) => {
   const { style, isVisible } = useMemo(() => {
     if (!item.start || !item.end) {
       return { style: {}, isVisible: false };
@@ -45,7 +46,10 @@ export const TimelineRow: React.FC<TimelineRowProps> = ({ item, year, colorClass
   }, [item.start, item.end, year]);
 
   return (
-    <div className="flex border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors group">
+    <div 
+      className="flex border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors group"
+      onClick={() => onClick(item)}
+    >
       {/* Sidebar Info */}
       <div className="w-64 flex-shrink-0 p-3 border-r border-gray-800 flex flex-col justify-center relative overflow-hidden">
         <div className="font-medium text-gray-200 truncate" title={item.name}>
