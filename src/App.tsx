@@ -2,13 +2,16 @@ import { useState } from 'react';
 import { FileUpload } from './components/FileUpload';
 import { Timeline } from './components/Timeline';
 import { parseExcel } from './utils/excelParser';
+import { exportRoadmapWithVisualization } from './utils/excelExporter';
 import type { RoadmapData } from './types';
-import { FileSpreadsheet, RefreshCw } from 'lucide-react';
+import { FileSpreadsheet, RefreshCw, Download } from 'lucide-react';
 
 function App() {
   const [data, setData] = useState<RoadmapData | null>(null);
+  const [originalFile, setOriginalFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [exporting, setExporting] = useState(false);
 
   const handleUpload = async (file: File) => {
     setLoading(true);
@@ -16,6 +19,7 @@ function App() {
     try {
       const parsedData = await parseExcel(file);
       setData(parsedData);
+      setOriginalFile(file);
     } catch (err) {
       console.error(err);
       setError('Failed to parse Excel file. Please ensure it matches the required format.');
@@ -26,7 +30,30 @@ function App() {
 
   const handleReset = () => {
     setData(null);
+    setOriginalFile(null);
     setError(null);
+  };
+
+  const handleExport = async () => {
+    if (!data || !originalFile) return;
+    
+    setExporting(true);
+    try {
+      // Auto-detect year from first item with a date, or default to current year
+      const allItems = [
+        ...data.ungroupedItems,
+        ...data.goals.flatMap(g => g.items)
+      ];
+      const firstItemWithDate = allItems.find(i => i.start);
+      const year = firstItemWithDate?.start?.getFullYear() || new Date().getFullYear();
+      
+      await exportRoadmapWithVisualization(originalFile, data, year);
+    } catch (err) {
+      console.error(err);
+      setError('Failed to export Excel file. Please try again.');
+    } finally {
+      setExporting(false);
+    }
   };
 
   return (
@@ -42,13 +69,23 @@ function App() {
           </h1>
         </div>
         {data && (
-          <button
-            onClick={handleReset}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-          >
-            <RefreshCw size={16} />
-            Upload New File
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleExport}
+              disabled={exporting}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed rounded-lg transition-colors"
+            >
+              <Download size={16} />
+              {exporting ? 'Exporting...' : 'Export with Visualization'}
+            </button>
+            <button
+              onClick={handleReset}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
+            >
+              <RefreshCw size={16} />
+              Upload New File
+            </button>
+          </div>
         )}
       </header>
 
