@@ -1,4 +1,5 @@
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { X, Calendar, DollarSign, FileText, CheckSquare } from 'lucide-react';
 import type { RoadmapItem } from '../types';
 
@@ -10,8 +11,8 @@ interface ItemDetailsModalProps {
 export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({ item, onClose }) => {
   if (!item) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
+  return createPortal(
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
       <div className="bg-[#1e1e1e] border border-gray-700 rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
         <div className="p-6 border-b border-gray-700 flex justify-between items-start bg-gray-800/50">
@@ -98,6 +99,7 @@ export const ItemDetailsModal: React.FC<ItemDetailsModalProps> = ({ item, onClos
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
