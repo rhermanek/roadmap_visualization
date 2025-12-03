@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { FileUpload } from './components/FileUpload';
 import { Timeline } from './components/Timeline';
+import { ShareButton } from './components/ShareButton';
 import { parseExcel } from './utils/excelParser';
 import { exportRoadmapWithVisualization } from './utils/excelExporter';
 import type { RoadmapData } from './types';
 import { FileSpreadsheet, RefreshCw, Download } from 'lucide-react';
+import LZString from 'lz-string';
 
 function App() {
   const [data, setData] = useState<RoadmapData | null>(null);
@@ -13,6 +15,40 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [exporting, setExporting] = useState(false);
 
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const compressedData = params.get('data');
+    if (compressedData) {
+      try {
+        const decompressed = LZString.decompressFromEncodedURIComponent(compressedData);
+        if (decompressed) {
+          const parsedData = JSON.parse(decompressed);
+          
+          // Revive dates
+          const reviveItemDates = (item: any) => {
+            if (item.start) item.start = new Date(item.start);
+            if (item.end) item.end = new Date(item.end);
+            return item;
+          };
+
+          if (parsedData.goals) {
+            parsedData.goals.forEach((g: any) => {
+              g.items = g.items.map(reviveItemDates);
+            });
+          }
+          if (parsedData.ungroupedItems) {
+            parsedData.ungroupedItems = parsedData.ungroupedItems.map(reviveItemDates);
+          }
+
+          setData(parsedData as RoadmapData);
+        }
+      } catch (err) {
+        console.error('Failed to load shared data:', err);
+        setError('Failed to load shared roadmap. The link might be broken.');
+      }
+    }
+  }, []);
+
   const handleUpload = async (file: File) => {
     setLoading(true);
     setError(null);
@@ -20,6 +56,8 @@ function App() {
       const parsedData = await parseExcel(file);
       setData(parsedData);
       setOriginalFile(file);
+      // Clear URL param if new file is uploaded
+      window.history.replaceState({}, '', window.location.pathname);
     } catch (err) {
       console.error(err);
       setError('Failed to parse Excel file. Please ensure it matches the required format.');
@@ -32,6 +70,8 @@ function App() {
     setData(null);
     setOriginalFile(null);
     setError(null);
+    // Clear URL param
+    window.history.replaceState({}, '', window.location.pathname);
   };
 
   const handleExport = async () => {
@@ -70,14 +110,17 @@ function App() {
         </div>
         {data && (
           <div className="flex items-center gap-3">
-            <button
-              onClick={handleExport}
-              disabled={exporting}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed rounded-lg transition-colors"
-            >
-              <Download size={16} />
-              {exporting ? 'Exporting...' : 'Export with Visualization'}
-            </button>
+            <ShareButton data={data} />
+            {originalFile && (
+              <button
+                onClick={handleExport}
+                disabled={exporting}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed rounded-lg transition-colors"
+              >
+                <Download size={16} />
+                {exporting ? 'Exporting...' : 'Export with Visualization'}
+              </button>
+            )}
             <button
               onClick={handleReset}
               className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
