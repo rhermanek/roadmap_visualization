@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Share2, Check } from 'lucide-react';
-import LZString from 'lz-string';
 import type { RoadmapData } from '../types';
+import { generateShareUrl } from '../utils/urlData';
 
 interface ShareButtonProps {
   data: RoadmapData;
@@ -14,16 +14,10 @@ export function ShareButton({ data }: ShareButtonProps) {
   const handleShare = async () => {
     setGenerating(true);
     try {
-      // Compress the data
-      const jsonString = JSON.stringify(data);
-      const compressed = LZString.compressToEncodedURIComponent(jsonString);
-      
-      // Construct the URL
-      const url = new URL(window.location.href);
-      url.searchParams.set('data', compressed);
+      const url = generateShareUrl(data);
       
       // Copy to clipboard
-      await navigator.clipboard.writeText(url.toString());
+      await navigator.clipboard.writeText(url);
       
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);

@@ -6,7 +6,7 @@ import { parseExcel } from './utils/excelParser';
 import { exportRoadmapWithVisualization } from './utils/excelExporter';
 import type { RoadmapData } from './types';
 import { FileSpreadsheet, RefreshCw, Download } from 'lucide-react';
-import LZString from 'lz-string';
+import { parseShareUrl } from './utils/urlData';
 
 function App() {
   const [data, setData] = useState<RoadmapData | null>(null);
@@ -16,36 +16,9 @@ function App() {
   const [exporting, setExporting] = useState(false);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const compressedData = params.get('data');
-    if (compressedData) {
-      try {
-        const decompressed = LZString.decompressFromEncodedURIComponent(compressedData);
-        if (decompressed) {
-          const parsedData = JSON.parse(decompressed);
-          
-          // Revive dates
-          const reviveItemDates = (item: any) => {
-            if (item.start) item.start = new Date(item.start);
-            if (item.end) item.end = new Date(item.end);
-            return item;
-          };
-
-          if (parsedData.goals) {
-            parsedData.goals.forEach((g: any) => {
-              g.items = g.items.map(reviveItemDates);
-            });
-          }
-          if (parsedData.ungroupedItems) {
-            parsedData.ungroupedItems = parsedData.ungroupedItems.map(reviveItemDates);
-          }
-
-          setData(parsedData as RoadmapData);
-        }
-      } catch (err) {
-        console.error('Failed to load shared data:', err);
-        setError('Failed to load shared roadmap. The link might be broken.');
-      }
+    const sharedData = parseShareUrl();
+    if (sharedData) {
+      setData(sharedData);
     }
   }, []);
 
