@@ -16,10 +16,10 @@ export const Timeline: React.FC<TimelineProps> = ({ data, year = new Date().getF
   const [selectedItem, setSelectedItem] = useState<RoadmapItem | null>(null);
 
   return (
-    <div className="flex flex-col w-full h-full bg-[#1a1a1a] text-gray-200 overflow-hidden rounded-xl border border-gray-800 shadow-2xl">
+    <div className="flex flex-col w-full h-full bg-white dark:bg-[#1a1a1a] text-gray-900 dark:text-gray-200 overflow-hidden rounded-xl border border-gray-200 dark:border-gray-800 shadow-xl dark:shadow-2xl transition-colors duration-300">
       {/* Header */}
-      <div className="p-4 bg-gray-900 border-b border-gray-800 flex justify-between items-center">
-        <h2 className="text-xl font-bold text-white tracking-tight">
+      <div className="p-4 bg-gray-50 dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 flex justify-between items-center transition-colors duration-300">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight">
           Project Roadmap <span className="text-blue-500">{year}</span>
         </h2>
         <div className="text-sm text-gray-500">
@@ -48,7 +48,7 @@ export const Timeline: React.FC<TimelineProps> = ({ data, year = new Date().getF
             {data.ungroupedItems.length > 0 && (
               <>
                 {data.goals.length > 0 && (
-                  <div className="px-3 py-2 bg-gray-800/30 text-xs font-bold text-gray-500 uppercase tracking-wider border-y border-gray-800 mt-4">
+                  <div className="px-3 py-2 bg-gray-100/50 dark:bg-gray-800/30 text-xs font-bold text-gray-500 uppercase tracking-wider border-y border-gray-200 dark:border-gray-800 mt-4 transition-colors duration-300">
                     Other Items
                   </div>
                 )}

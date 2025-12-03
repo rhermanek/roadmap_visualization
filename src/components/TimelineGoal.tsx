@@ -14,27 +14,27 @@ export const TimelineGoal: React.FC<TimelineGoalProps> = ({ goal, year, colorCla
   const [isExpanded, setIsExpanded] = useState(true);
 
   return (
-    <div className="border-b border-gray-800">
+    <div className="border-b border-gray-200 dark:border-gray-800 transition-colors duration-300">
       {/* Goal Header */}
       <div
-        className="flex items-center bg-gray-800/40 hover:bg-gray-800/60 cursor-pointer py-2 px-3 border-l-4 border-indigo-500 transition-colors"
+        className="flex items-center bg-gray-100/40 dark:bg-gray-800/40 hover:bg-gray-200/60 dark:hover:bg-gray-800/60 cursor-pointer py-2 px-3 border-l-4 border-indigo-500 transition-colors"
         onClick={() => setIsExpanded(!isExpanded)}
       >
-        <div className="mr-2 text-gray-400">
+        <div className="mr-2 text-gray-500 dark:text-gray-400">
           {isExpanded ? <ChevronDown size={18} /> : <ChevronRight size={18} />}
         </div>
         <Folder size={18} className="mr-2 text-indigo-400" />
-        <span className="font-semibold text-gray-200 text-sm uppercase tracking-wider">
+        <span className="font-semibold text-gray-700 dark:text-gray-200 text-sm uppercase tracking-wider">
           {goal.name}
         </span>
-        <span className="ml-2 text-xs text-gray-500 bg-gray-800 px-2 py-0.5 rounded-full">
+        <span className="ml-2 text-xs text-gray-600 dark:text-gray-500 bg-gray-200 dark:bg-gray-800 px-2 py-0.5 rounded-full transition-colors duration-300">
           {goal.items.length} items
         </span>
       </div>
 
       {/* Goal Items */}
       {isExpanded && (
-        <div className="bg-gray-900/10">
+        <div className="bg-gray-50/10 dark:bg-gray-900/10">
           {goal.items.map((item) => (
             <TimelineRow 
               key={item.id} 

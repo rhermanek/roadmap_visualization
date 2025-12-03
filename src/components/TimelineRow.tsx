@@ -47,12 +47,12 @@ export const TimelineRow: React.FC<TimelineRowProps> = ({ item, year, colorClass
 
   return (
     <div 
-      className="flex border-b border-gray-800/50 hover:bg-gray-800/30 transition-colors group"
+      className="flex border-b border-gray-200/50 dark:border-gray-800/50 hover:bg-gray-100/30 dark:hover:bg-gray-800/30 transition-colors group"
       onClick={() => onClick(item)}
     >
       {/* Sidebar Info */}
-      <div className="w-64 flex-shrink-0 p-3 border-r border-gray-800 flex flex-col justify-center relative overflow-hidden">
-        <div className="font-medium text-gray-200 truncate" title={item.name}>
+      <div className="w-64 flex-shrink-0 p-3 border-r border-gray-200 dark:border-gray-800 flex flex-col justify-center relative overflow-hidden transition-colors duration-300">
+        <div className="font-medium text-gray-700 dark:text-gray-200 truncate" title={item.name}>
           {item.name}
         </div>
         {item.description && (
@@ -68,7 +68,7 @@ export const TimelineRow: React.FC<TimelineRowProps> = ({ item, year, colorClass
       </div>
 
       {/* Timeline Track */}
-      <div className="flex-grow relative h-16 bg-gray-900/20">
+      <div className="flex-grow relative h-16 bg-gray-50/20 dark:bg-gray-900/20 transition-colors duration-300">
         {/* Grid Lines (Vertical) - 12 months */}
         <div className="absolute inset-0 flex pointer-events-none">
           {Array.from({ length: 12 }).map((_, i) => {
@@ -77,8 +77,8 @@ export const TimelineRow: React.FC<TimelineRowProps> = ({ item, year, colorClass
               <div 
                 key={i} 
                 className={clsx(
-                  "flex-1 border-r last:border-r-0",
-                  isQuarterEnd ? "border-gray-600/60" : "border-gray-800/30"
+                  "flex-1 border-r last:border-r-0 transition-colors duration-300",
+                  isQuarterEnd ? "border-gray-300/60 dark:border-gray-600/60" : "border-gray-200/30 dark:border-gray-800/30"
                 )} 
               />
             );

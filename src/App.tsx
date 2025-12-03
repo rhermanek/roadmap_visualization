@@ -1,4 +1,6 @@
 import { useState, useEffect } from 'react';
+import { ThemeProvider } from './context/ThemeContext';
+import { ThemeToggle } from './components/ThemeToggle';
 import { FileUpload } from './components/FileUpload';
 import { Timeline } from './components/Timeline';
 import { ShareButton } from './components/ShareButton';
@@ -70,39 +72,45 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-[#121212] text-white flex flex-col">
+    <ThemeProvider>
+      <div className="min-h-screen bg-gray-50 dark:bg-[#121212] text-gray-900 dark:text-white flex flex-col transition-colors duration-300">
       {/* App Header */}
-      <header className="h-16 border-b border-gray-800 bg-[#1a1a1a]/80 backdrop-blur-md flex items-center px-6 justify-between sticky top-0 z-50">
+      <header className="h-16 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-[#1a1a1a]/80 backdrop-blur-md flex items-center px-6 justify-between sticky top-0 z-50 transition-colors duration-300">
         <div className="flex items-center gap-3">
           <div className="p-2 bg-blue-600/20 rounded-lg text-blue-500">
             <FileSpreadsheet size={24} />
           </div>
-          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-gray-400">
+          <h1 className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400">
             Roadmap Visualizer
           </h1>
         </div>
-        {data && (
-          <div className="flex items-center gap-3">
-            <ShareButton data={data} />
-            {originalFile && (
+        <div className="flex items-center gap-4">
+          {data && (
+            <div className="flex items-center gap-3">
+              <ShareButton data={data} />
+              {originalFile && (
+                <button
+                  onClick={handleExport}
+                  disabled={exporting}
+                  className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                >
+                  <Download size={16} />
+                  {exporting ? 'Exporting...' : 'Export with Visualization'}
+                </button>
+              )}
               <button
-                onClick={handleExport}
-                disabled={exporting}
-                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-600/50 disabled:cursor-not-allowed rounded-lg transition-colors"
+                onClick={handleReset}
+                className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
               >
-                <Download size={16} />
-                {exporting ? 'Exporting...' : 'Export with Visualization'}
+                <RefreshCw size={16} />
+                Upload New File
               </button>
-            )}
-            <button
-              onClick={handleReset}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-400 hover:text-white hover:bg-gray-800 rounded-lg transition-colors"
-            >
-              <RefreshCw size={16} />
-              Upload New File
-            </button>
+            </div>
+          )}
+          <div className="pl-4 border-l border-gray-200 dark:border-gray-700">
+            <ThemeToggle />
           </div>
-        )}
+        </div>
       </header>
 
       {/* Main Content */}
@@ -115,10 +123,10 @@ function App() {
         ) : !data ? (
           <div className="w-full max-w-4xl animate-fade-in">
             <div className="text-center mb-12 mt-10">
-              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-b from-white to-gray-500 bg-clip-text text-transparent">
+              <h2 className="text-4xl font-bold mb-4 bg-gradient-to-b from-gray-900 to-gray-600 dark:from-white dark:to-gray-500 bg-clip-text text-transparent">
                 Visualize Your Project Timeline
               </h2>
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              <p className="text-gray-600 dark:text-gray-400 text-lg max-w-2xl mx-auto">
                 Upload your Excel roadmap to generate an interactive, yearly timeline view instantly.
               </p>
             </div>
@@ -133,15 +141,15 @@ function App() {
             
             {/* Sample Format Info */}
             <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 text-sm text-gray-500">
-              <div className="p-6 rounded-xl bg-gray-900/50 border border-gray-800">
-                <h3 className="text-gray-300 font-semibold mb-3">Type 1 Format</h3>
-                <code className="block bg-black/30 p-3 rounded border border-gray-800 font-mono text-xs">
+              <div className="p-6 rounded-xl bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 shadow-sm dark:shadow-none">
+                <h3 className="text-gray-700 dark:text-gray-300 font-semibold mb-3">Type 1 Format</h3>
+                <code className="block bg-gray-100 dark:bg-black/30 p-3 rounded border border-gray-200 dark:border-gray-800 font-mono text-xs text-gray-600 dark:text-gray-400">
                   ID, Name, Description, Acceptance Criteria, Start, End, PD, Cost
                 </code>
               </div>
-              <div className="p-6 rounded-xl bg-gray-900/50 border border-gray-800">
-                <h3 className="text-gray-300 font-semibold mb-3">Type 2 Format</h3>
-                <code className="block bg-black/30 p-3 rounded border border-gray-800 font-mono text-xs">
+              <div className="p-6 rounded-xl bg-white dark:bg-gray-900/50 border border-gray-200 dark:border-gray-800 shadow-sm dark:shadow-none">
+                <h3 className="text-gray-700 dark:text-gray-300 font-semibold mb-3">Type 2 Format</h3>
+                <code className="block bg-gray-100 dark:bg-black/30 p-3 rounded border border-gray-200 dark:border-gray-800 font-mono text-xs text-gray-600 dark:text-gray-400">
                   ID, Name, Goal, Description, Acceptance Criteria, Start, End, PD, Cost
                 </code>
               </div>
@@ -167,6 +175,7 @@ function App() {
         )}
       </main>
     </div>
+    </ThemeProvider>
   );
 }
 
